@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Connect to MakerSpaceAPI",
-        "description": "Enter the base URL and a device API token for your MakerSpaceAPI instance.\n\nThe token is used to fetch rental item status and booking target balances; products are fetched without authentication.",
+        "description": "Enter the base URL for your MakerSpaceAPI instance. The API token is optional: without it only product stock and prices are available. With a device token, booking target balances and rental item status are also exposed.",
         "data": {
           "url": "Base URL",
           "token": "API Token"

@@ -13,7 +13,7 @@ from .const import CONF_TOKEN, CONF_URL, DOMAIN
 _STEP_USER_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_URL): str,
-        vol.Required(CONF_TOKEN): str,
+        vol.Optional(CONF_TOKEN, default=""): str,
     }
 )
 

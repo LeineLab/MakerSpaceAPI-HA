@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "MakerSpaceAPI verbinden",
-        "description": "Gib die URL und den API-Token für deine MakerSpaceAPI Instanz ein.\n\nDer Token wird benötigt, um den Ausleihstatus und die Kontostände abzufragen; Produkte können auch ohne abgefragt werden.",
+        "description": "Gib die Basis-URL deiner MakerSpaceAPI-Instanz ein. Der API-Token ist optional: Ohne Token werden nur Produktbestand und Preise abgefragt. Mit einem Geräte-Token werden zusätzlich Buchungsziel-Kontostände und der Ausleihstatus von Gegenständen bereitgestellt.",
         "data": {
           "url": "Base URL",
           "token": "API Token"
