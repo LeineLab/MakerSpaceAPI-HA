@@ -9,7 +9,7 @@
           "token": "API Token"
         },
         "data_description": {
-          "url": "z.B. http://192.168.1.100:8000 oder https://api.makerspace.example",
+          "url": "Basis-URL ohne Schrägstrich am Ende",
           "token": "Bearer-Token von der Maschinen-Registrierungsseite"
         }
       }
