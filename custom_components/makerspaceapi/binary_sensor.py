@@ -1,7 +1,7 @@
 """Binary sensor platform: rental items (is_rented)."""
 from __future__ import annotations
 
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -38,7 +38,9 @@ async def async_setup_entry(
 
 
 class RentalItemSensor(MakerSpaceEntity, BinarySensorEntity):
-    """Binary sensor that is ON when a rental item is currently rented out."""
+    """Binary sensor: ON (present) when the item is available, OFF (away) when rented out."""
+
+    _attr_device_class = BinarySensorDeviceClass.PRESENCE
 
     def __init__(
         self, coordinator: MakerSpaceCoordinator, entry: ConfigEntry, uhf_tid: str
@@ -60,12 +62,12 @@ class RentalItemSensor(MakerSpaceEntity, BinarySensorEntity):
 
     @property
     def icon(self) -> str:
-        return "mdi:tag-remove" if self.is_on else "mdi:tag"
+        return "mdi:tag" if self.is_on else "mdi:tag-remove"
 
     @property
     def is_on(self) -> bool | None:
         item = self._item()
-        return item["is_rented"] if item else None
+        return (not item["is_rented"]) if item else None
 
     @property
     def available(self) -> bool:
