@@ -1,0 +1,10 @@
+{
+  "domain": "makerspaceapi",
+  "name": "MakerSpaceAPI",
+  "codeowners": ["@soundstorm","@LeineLab"],
+  "config_flow": true,
+  "documentation": "https://github.com/LeineLab/MakerSpaceAPI-HA",
+  "iot_class": "local_polling",
+  "version": "1.0.0",
+  "requirements": []
+}
