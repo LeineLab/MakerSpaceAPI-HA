@@ -3,8 +3,10 @@
   "name": "MakerSpaceAPI",
   "codeowners": ["@soundstorm","@LeineLab"],
   "config_flow": true,
+  "dependencies": [],
   "documentation": "https://github.com/LeineLab/MakerSpaceAPI-HA",
   "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/LeineLab/MakerSpaceAPI-HA/issues",
   "requirements": [],
   "version": "1.0.0"
 }
