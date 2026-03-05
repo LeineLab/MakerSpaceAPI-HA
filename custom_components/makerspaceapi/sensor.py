@@ -54,7 +54,6 @@ class ProductSensor(MakerSpaceEntity, SensorEntity):
 
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = "items"
-    _attr_icon = "mdi:package-variant"
 
     def __init__(
         self, coordinator: MakerSpaceCoordinator, entry: ConfigEntry, ean: str
@@ -74,6 +73,19 @@ class ProductSensor(MakerSpaceEntity, SensorEntity):
         p = self._product()
         return p["name"] if p else f"Product {self._ean}"
 
+    @property
+    def icon(self) -> str:
+        p = self._product()
+        if not p:
+            return "mdi:help"
+        if p["category"].lower() in ("drinks", "drink", "getränke", "getränk", "beer", "bier"):
+            return "mdi:cup" if p["stock"] > 0 else "mdi:cup-off"
+        if p["category"].lower() in ("snacks", "snack", "food", "essen"):
+            return "mdi:peanut" if p["stock"] > 0 else "mdi:peanut-off"
+        if p["category"].lower() in ("sweets", "candy", "süßigkeiten"):
+            return "mdi:candy" if p["stock"] > 0 else "mdi:candy-off"
+        return "mdi:package-variant" if p["stock"] > 0 else "mdi:package-variant-remove"
+    
     @property
     def native_value(self) -> int | None:
         p = self._product()
@@ -125,6 +137,13 @@ class BookingTargetSensor(MakerSpaceEntity, SensorEntity):
     def name(self) -> str:
         t = self._target()
         return t["name"] if t else f"Target {self._slug}"
+
+    @property
+    def icon(self) -> str:
+        t = self._target()
+        if not t:
+            return "mdi:cash-sync"
+        return "mdi:cash" if t["balance"] > 0 else "mdi:cash-off"
 
     @property
     def native_value(self) -> float | None:
