@@ -118,7 +118,6 @@ class BookingTargetSensor(MakerSpaceEntity, SensorEntity):
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = CURRENCY_EURO
     _attr_suggested_display_precision = 2
-    _attr_icon = "mdi:cash"
 
     def __init__(
         self, coordinator: MakerSpaceCoordinator, entry: ConfigEntry, slug: str
@@ -143,7 +142,7 @@ class BookingTargetSensor(MakerSpaceEntity, SensorEntity):
         t = self._target()
         if not t:
             return "mdi:cash-sync"
-        return "mdi:cash" if t["balance"] > 0 else "mdi:cash-off"
+        return "mdi:cash" if float(t["balance"]) > 0 else "mdi:cash-off"
 
     @property
     def native_value(self) -> float | None:
