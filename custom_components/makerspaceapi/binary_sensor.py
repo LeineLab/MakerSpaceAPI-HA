@@ -49,6 +49,10 @@ class RentalItemSensor(MakerSpaceEntity, BinarySensorEntity):
         self._uhf_tid = uhf_tid
         self._attr_unique_id = f"{entry.entry_id}_rental_{uhf_tid}"
 
+    @property
+    def suggested_object_id(self) -> str | None:
+        return f"rental_{self._uhf_tid}"
+
     def _item(self) -> dict | None:
         for i in self.coordinator.data.get("catalog", []):
             if i["uhf_tid"] == self._uhf_tid:

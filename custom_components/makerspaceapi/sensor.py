@@ -63,6 +63,10 @@ class ProductSensor(MakerSpaceEntity, SensorEntity):
         self._ean = ean
         self._attr_unique_id = f"{entry.entry_id}_product_{ean}"
 
+    @property
+    def suggested_object_id(self) -> str | None:
+        return f"product_{self._ean}"
+
     def _product(self) -> dict | None:
         for p in self.coordinator.data.get("products", []):
             if p["ean"] == self._ean:
@@ -114,6 +118,10 @@ class BookingTargetSensor(MakerSpaceEntity, SensorEntity):
         super().__init__(coordinator, entry)
         self._slug = slug
         self._attr_unique_id = f"{entry.entry_id}_target_{slug}"
+
+    @property
+    def suggested_object_id(self) -> str | None:
+        return f"target_{self._slug}"
 
     def _target(self) -> dict | None:
         for t in self.coordinator.data.get("targets", []):
