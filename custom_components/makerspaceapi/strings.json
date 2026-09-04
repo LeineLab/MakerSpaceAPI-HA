@@ -20,5 +20,19 @@
     "abort": {
       "already_configured": "This MakerSpaceAPI instance is already configured."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MakerSpaceAPI options",
+        "description": "Configure how often the integration polls the API.",
+        "data": {
+          "scan_interval": "Poll interval (seconds)"
+        },
+        "data_description": {
+          "scan_interval": "How often to refresh product stock, balances and rental status, in seconds (30-3600)."
+        }
+      }
+    }
   }
 }

@@ -6,9 +6,18 @@ from urllib.parse import urlparse
 import aiohttp
 import voluptuous as vol
 from homeassistant import config_entries
+from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import CONF_TOKEN, CONF_URL, DOMAIN
+from .const import (
+    CONF_SCAN_INTERVAL,
+    CONF_TOKEN,
+    CONF_URL,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    MAX_SCAN_INTERVAL,
+    MIN_SCAN_INTERVAL,
+)
 
 _STEP_USER_SCHEMA = vol.Schema(
     {
@@ -57,3 +66,33 @@ class MakerSpaceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=_STEP_USER_SCHEMA,
             errors=errors,
         )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: config_entries.ConfigEntry,
+    ) -> MakerSpaceOptionsFlow:
+        return MakerSpaceOptionsFlow()
+
+
+class MakerSpaceOptionsFlow(config_entries.OptionsFlow):
+    """Let the user change the poll interval after setup."""
+
+    async def async_step_init(
+        self, user_input: dict | None = None
+    ) -> config_entries.FlowResult:
+        if user_input is not None:
+            return self.async_create_entry(data=user_input)
+
+        current = self.config_entry.options.get(
+            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+        )
+        schema = vol.Schema(
+            {
+                vol.Optional(CONF_SCAN_INTERVAL, default=current): vol.All(
+                    vol.Coerce(int),
+                    vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                ),
+            }
+        )
+        return self.async_show_form(step_id="init", data_schema=schema)

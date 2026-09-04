@@ -20,5 +20,19 @@
     "abort": {
       "already_configured": "Diese MakerSpaceAPI Instanz ist bereits konfiguriert."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MakerSpaceAPI Optionen",
+        "description": "Lege fest, wie oft die Integration die API abfragt.",
+        "data": {
+          "scan_interval": "Abfrageintervall (Sekunden)"
+        },
+        "data_description": {
+          "scan_interval": "Wie oft Produktbestand, Kontostände und Ausleihstatus aktualisiert werden, in Sekunden (30-3600)."
+        }
+      }
+    }
   }
 }

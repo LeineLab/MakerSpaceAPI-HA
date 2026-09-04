@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, UPDATE_INTERVAL
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,12 +19,14 @@ _TIMEOUT = aiohttp.ClientTimeout(total=10)
 class MakerSpaceCoordinator(DataUpdateCoordinator[dict]):
     """Fetches products (always), booking targets and rental catalog (when token provided)."""
 
-    def __init__(self, hass: HomeAssistant, base_url: str, token: str) -> None:
+    def __init__(
+        self, hass: HomeAssistant, base_url: str, token: str, update_interval: int
+    ) -> None:
         super().__init__(
             hass,
             _LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(seconds=UPDATE_INTERVAL),
+            update_interval=timedelta(seconds=update_interval),
         )
         self.base_url = base_url.rstrip("/")
         self.token = token.strip()
