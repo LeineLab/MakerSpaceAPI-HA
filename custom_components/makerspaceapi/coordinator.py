@@ -17,7 +17,7 @@ _TIMEOUT = aiohttp.ClientTimeout(total=10)
 
 
 class MakerSpaceCoordinator(DataUpdateCoordinator[dict]):
-    """Fetches products (always), booking targets and rental catalog (when token provided)."""
+    """Fetches products and filament stock (always), booking targets and rental catalog (when token provided)."""
 
     def __init__(
         self, hass: HomeAssistant, base_url: str, token: str, update_interval: int
@@ -43,6 +43,17 @@ class MakerSpaceCoordinator(DataUpdateCoordinator[dict]):
                 products: list = await resp.json()
         except (aiohttp.ClientError, TimeoutError) as exc:
             raise UpdateFailed(f"Cannot reach MakerSpaceAPI at {self.base_url}: {exc}") from exc
+
+        # Filament stock summary is public as well; failure must not break the rest.
+        filament: list = []
+        try:
+            async with session.get(
+                f"{self.base_url}/api/v1/filament/rolls/summary", timeout=_TIMEOUT
+            ) as resp:
+                resp.raise_for_status()
+                filament = await resp.json()
+        except Exception as exc:  # noqa: BLE001
+            _LOGGER.warning("Could not fetch filament stock from %s: %s", self.base_url, exc)
 
         # Booking targets and rental catalog require a device token.
         targets: list = []
@@ -71,4 +82,4 @@ class MakerSpaceCoordinator(DataUpdateCoordinator[dict]):
             except Exception as exc:  # noqa: BLE001
                 _LOGGER.warning("Could not fetch rental catalog from %s: %s", self.base_url, exc)
 
-        return {"products": products, "targets": targets, "catalog": catalog}
+        return {"products": products, "targets": targets, "catalog": catalog, "filament": filament}

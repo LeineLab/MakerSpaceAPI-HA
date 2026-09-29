@@ -21,6 +21,7 @@ async def async_setup_entry(
 
     known_products: set[str] = set()
     known_targets: set[str] = set()
+    known_filament: set[str] = set()
 
     @callback
     def _add_new_entities() -> None:
@@ -38,11 +39,23 @@ async def async_setup_entry(
                 known_targets.add(slug)
                 new.append(BookingTargetSensor(coordinator, entry, slug))
 
+        for spec in coordinator.data.get("filament", []):
+            key = filament_key(spec)
+            if key not in known_filament:
+                known_filament.add(key)
+                new.append(FilamentSensor(coordinator, entry, key, spec))
+
         if new:
             async_add_entities(new)
 
     entry.async_on_unload(coordinator.async_add_listener(_add_new_entities))
     _add_new_entities()
+
+
+def filament_key(spec: dict) -> str:
+    """Stable identifier of a filament spec (brand+type+weight+color)."""
+    color = "".join(c for c in spec["color"].lower() if c.isalnum())
+    return f"{spec['brand_id']}_{spec['type_id']}_{spec['weight_grams']}_{color}"
 
 
 # ---------------------------------------------------------------------------
@@ -167,3 +180,63 @@ class BookingTargetSensor(MakerSpaceEntity, SensorEntity):
         if not t:
             return {}
         return {"slug": t["slug"], "id": t["id"]}
+
+
+# ---------------------------------------------------------------------------
+# Filament sensor — state: number of rolls in stock for one brand/type/weight/color
+# ---------------------------------------------------------------------------
+
+class FilamentSensor(MakerSpaceEntity, SensorEntity):
+    """In-stock roll count for one filament spec.
+
+    The API only lists specs with rolls in stock, so a spec that disappears
+    from the summary is reported as 0 rather than unavailable.
+    """
+
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_native_unit_of_measurement = "rolls"
+
+    def __init__(
+        self, coordinator: MakerSpaceCoordinator, entry: ConfigEntry, key: str, spec: dict
+    ) -> None:
+        super().__init__(coordinator, entry)
+        self._key = key
+        self._spec = spec  # last known spec, used while it is out of stock
+        self._attr_unique_id = f"{entry.entry_id}_filament_{key}"
+
+    @property
+    def suggested_object_id(self) -> str | None:
+        return f"filament_{self._key}"
+
+    def _current(self) -> dict | None:
+        for spec in self.coordinator.data.get("filament", []):
+            if filament_key(spec) == self._key:
+                self._spec = spec
+                return spec
+        return None
+
+    @property
+    def name(self) -> str:
+        self._current()
+        s = self._spec
+        return f"{s['brand_name']} {s['type_name']} {s['color']} {s['weight_grams']} g"
+
+    @property
+    def icon(self) -> str:
+        return "mdi:printer-3d-nozzle" if self.native_value else "mdi:printer-3d-nozzle-outline"
+
+    @property
+    def native_value(self) -> int:
+        spec = self._current()
+        return spec["count_in_stock"] if spec else 0
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        self._current()
+        s = self._spec
+        return {
+            "brand": s["brand_name"],
+            "type": s["type_name"],
+            "weight_grams": s["weight_grams"],
+            "color": s["color"],
+        }

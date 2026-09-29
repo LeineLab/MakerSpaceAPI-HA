@@ -9,3 +9,5 @@ Current prices are listed in the attributes.
 
 Items and balances need an token, which can be granted in the admin interface of the MakerSpaceAPI.
 Items are listed as presence sensors, so if they are rented, they show away, otherwise at home.
+The filament stock summary (`/filament/rolls/summary`) is public as well: one sensor per brand/type/weight/color
+shows how many rolls are in stock (0 once the last roll is checked out).
