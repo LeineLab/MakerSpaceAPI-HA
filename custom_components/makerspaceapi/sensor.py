@@ -52,6 +52,17 @@ async def async_setup_entry(
     _add_new_entities()
 
 
+def _hex_to_rgb(value: str) -> list[int] | None:
+    """Parse '#RRGGBB' into [r, g, b]; anything else (free text) yields None."""
+    v = (value or "").strip()
+    if len(v) == 7 and v[0] == "#":
+        try:
+            return [int(v[i:i + 2], 16) for i in (1, 3, 5)]
+        except ValueError:
+            return None
+    return None
+
+
 def filament_key(spec: dict) -> str:
     """Stable identifier of a filament spec (brand+type+weight+color)."""
     color = "".join(c for c in spec["color"].lower() if c.isalnum())
@@ -234,9 +245,13 @@ class FilamentSensor(MakerSpaceEntity, SensorEntity):
     def extra_state_attributes(self) -> dict:
         self._current()
         s = self._spec
-        return {
+        attrs = {
             "brand": s["brand_name"],
             "type": s["type_name"],
             "weight_grams": s["weight_grams"],
             "color": s["color"],
         }
+        rgb = _hex_to_rgb(s["color"])
+        if rgb:
+            attrs["rgb_color"] = rgb
+        return attrs
